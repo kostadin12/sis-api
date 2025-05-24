@@ -1,0 +1,93 @@
+decorator:
+  datasource:
+    datasource-proxy:
+      count-query: false
+      json-format: false
+      multiline: true
+      query:
+        enable-logging: false
+        log-level: info
+      slow-query:
+        enable-logging: false
+        log-level: info
+        threshold: 300
+    enabled: true
+    flexy-pool:
+      acquiring-strategy:
+        increment-pool:
+          max-overflow-pool-size: 5
+          timeout-millis: 500
+        retry:
+          attempts: 3
+      metrics:
+        reporter:
+          jmx:
+            enabled: false
+      threshold:
+        connection:
+          acquire: 100
+          lease: 1500
+
+user:
+  color:
+    tolerance: 10
+    ignoredColors:
+      - "#ffffff"
+      - "#000000"
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:DefaultSecretKeyForDevelopmentEnvironment12345}
+    expiration: 86400000  # 24 hours in milliseconds
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:3000}
+  email:
+    from: ${EMAIL_FROM:scruminformationsystem@gmail.com}
+  security:
+    password-reset:
+      # Maximum password reset requests per email within time window
+      max-requests-per-email: 3
+      # Rate limiting time window in minutes
+      rate-limit-window-minutes: 15
+      # Token expiration time in minutes
+      token-expiration-minutes: 15
+      # How long to keep old tokens for cleanup (days)
+      token-cleanup-days: 7
+      # Enable/disable rate limiting
+      rate-limiting-enabled: true
+      # Always send response regardless of user existence
+      always-send-response: true
+
+google:
+  calendar:
+    api:
+      enabled: true
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scrum_information_system
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: scruminformationsystem@gmail.com
+    password: lovmoejyxsafchkj
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+logging:
+  config: classpath:logback-env.xml

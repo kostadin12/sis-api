@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: classpath:db/changelog/sql/database.sql
+  - include:
+      file: classpath:db/changelog/sql/configuration-entries.sql
+  - include:
+      file: classpath:db/changelog/sql/add-user-password.sql
+  - include:
+      file: classpath:db/changelog/sql/create-password-reset-token-table.sql

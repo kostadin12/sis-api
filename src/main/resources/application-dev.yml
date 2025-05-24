@@ -1,0 +1,24 @@
+app:
+  jwt:
+    secret: DevEnvironmentJwtSecretKeyThatIsAtLeast32CharactersLong
+    expiration: 86400000  # 24 hours in milliseconds
+
+email:
+  uri: ${baseUrls.email}
+  clientId:
+
+google:
+  calendar:
+    api:
+      enabled: true
+      credentials-location: classpath:credentials.json
+      tokens-directory: tokens
+      application-name: SIS Time Management
+      bulgarian-holidays-calendar-id: en.bulgarian#holiday@group.v.calendar.google.com
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 1234
+    url: jdbc:postgresql://localhost:5432/scrum_information_system
