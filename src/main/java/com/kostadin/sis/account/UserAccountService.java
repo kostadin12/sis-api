@@ -23,9 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-
 import static com.kostadin.sis.label.model.LabelScope.SYSTEM;
 import static com.kostadin.sis.user.model.UserRole.ROLE_ADMIN;
 import static com.kostadin.sis.user.model.UserRole.ROLE_EMPLOYEE;
@@ -84,11 +81,6 @@ public class UserAccountService {
                 .setCompany(signupRequest.getCompany())
                 .setRole(signupRequest.getRole() != null ? signupRequest.getRole() : ROLE_EMPLOYEE)
                 .setColor("#ffffff");
-
-        // Assign default label if needed based on company or role
-        if (signupRequest.getCompany() != null && !signupRequest.getCompany().isBlank()) {
-            user.setLabels(new HashSet<>(List.of(selectSystemLabel(signupRequest.getCompany()))));
-        }
 
         log.info("Created new user with employee number {}", signupRequest.getEmployeeNumber());
 

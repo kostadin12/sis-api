@@ -1,5 +1,6 @@
 package com.kostadin.sis.project.service;
 
+import com.kostadin.sis.auth.security.services.UserDetailsImpl;
 import com.kostadin.sis.common.exception.ProjectBadRequestException;
 import com.kostadin.sis.common.exception.ProjectNotFoundException;
 import com.kostadin.sis.common.exception.UserNotFoundException;
@@ -17,6 +18,9 @@ import com.kostadin.sis.project.model.response.ProjectName;
 import com.kostadin.sis.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,14 +185,23 @@ public class ProjectService {
     private Project checkForUpdatedOwner(Project project, UpdateProjectCommand updateProjectCommand) {
         if (isNotBlank(updateProjectCommand.getNewBeneficiary())) {
 
-            var employeeNumber ="";
-            var roles ="";
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetailsImpl currentUser = (UserDetailsImpl) authentication.getPrincipal();
 
-            if (!employeeNumber.equals(project.getProjectOwner().getEmployeeNumber()) && !roles.contains("ROLE_ADMIN")) {
+            String employeeNumber = currentUser.getEmployeeNumber();
+            List<String> roles = currentUser.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+            boolean isAdmin = roles.contains("ROLE_ADMIN");
+            boolean isCurrentProjectOwner = employeeNumber.equals(project.getProjectOwner().getEmployeeNumber());
+
+            if (!isAdmin && !isCurrentProjectOwner) {
                 throw new ProjectBadRequestException("Only ex-project owner and administrators can change the project owner.");
             }
 
-            var beneficiary = userRepository.findBeneficiaryByEmployeeNumberIgnoreCase(updateProjectCommand.getNewBeneficiary(), project.getId())
+            var beneficiary = userRepository.findBeneficiaryByEmployeeNumberIgnoreCase(
+                    updateProjectCommand.getNewBeneficiary(), project.getId())
                     .orElseThrow(() -> new UserNotFoundException("User not found."));
 
             if (!List.of(ROLE_ADMIN, ROLE_MANAGER, ROLE_REPORT).contains(beneficiary.getRole())) {
